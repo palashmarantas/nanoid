@@ -1,0 +1,15 @@
+---
+framework: jest      # Mention the testing framework mocha, jest or jasmine.
+preRun:
+  - yarn install
+postMerge:
+  pattern:
+    - "./test/*.test.js"
+    - "./bin/nanoid.test.js"
+preMerge:
+  pattern:
+    - "./test/*.test.js"
+    - "./bin/nanoid.test.js"
+postRun:
+  - yarn -version
+version: 1.0
