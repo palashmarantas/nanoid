@@ -3,37 +3,9 @@
 
 let { urlAlphabet } = require('./url-alphabet')
 
-if (process.env.NODE_ENV !== 'production') {
-  // All bundlers will remove this block in the production bundle.
-  if (
-    typeof navigator !== 'undefined' &&
-    navigator.product === 'ReactNative' &&
-    typeof crypto === 'undefined'
-  ) {
-    throw new Error(
-      'React Native does not have a built-in secure random generator. ' +
-        'If you don’t need unpredictable IDs use `nanoid/non-secure`. ' +
-        'For secure IDs, import `react-native-get-random-values` ' +
-        'before Nano ID.'
-    )
-  }
-  if (typeof msCrypto !== 'undefined' && typeof crypto === 'undefined') {
-    throw new Error(
-      'Import file with `if (!window.crypto) window.crypto = window.msCrypto`' +
-        ' before importing Nano ID to fix IE 11 support'
-    )
-  }
-  if (typeof crypto === 'undefined') {
-    throw new Error(
-      'Your browser does not have secure random generator. ' +
-        'If you don’t need unpredictable IDs, you can use nanoid/non-secure.'
-    )
-  }
-}
-
 let random = bytes => crypto.getRandomValues(new Uint8Array(bytes))
 
-let customRandom = (alphabet, size, getRandom) => {
+let customRandom = (alphabet, defaultSize, getRandom) => {
   // First, a bitmask is necessary to generate the ID. The bitmask makes bytes
   // values closer to the alphabet size. The bitmask calculates the closest
   // `2^31 - 1` number, which exceeds the alphabet size.
@@ -55,9 +27,9 @@ let customRandom = (alphabet, size, getRandom) => {
 
   // `-~f => Math.ceil(f)` if f is a float
   // `-~i => i + 1` if i is an integer
-  let step = -~((1.6 * mask * size) / alphabet.length)
+  let step = -~((1.6 * mask * defaultSize) / alphabet.length)
 
-  return () => {
+  return (size = defaultSize) => {
     let id = ''
     while (true) {
       let bytes = getRandom(step)
@@ -72,7 +44,8 @@ let customRandom = (alphabet, size, getRandom) => {
   }
 }
 
-let customAlphabet = (alphabet, size) => customRandom(alphabet, size, random)
+let customAlphabet = (alphabet, size = 21) =>
+  customRandom(alphabet, size, random)
 
 let nanoid = (size = 21) => {
   let id = ''

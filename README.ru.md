@@ -3,7 +3,7 @@
 <img src="https://ai.github.io/nanoid/logo.svg" align="right"
      alt="Логотип Nano ID от Антона Ловчикова" width="180" height="94">
 
-[English](./README.md) | **Русский** | [简体中文](./README.zh-CN.md)
+[English](./README.md) | **Русский** | [简体中文](./README.zh-CN.md) | [Bahasa Indonesia](./README.id-ID.md)
 
 Генератор уникальных ID для JavaScript — лёгкий, безопасный,
 ID можно применять в URL.
@@ -87,27 +87,28 @@ Nano ID похож на UUID v4 (случайный).
 
 ```rust
 $ node ./test/benchmark.js
-crypto.randomUUID         28,387,114 ops/sec
-uid/secure                 8,633,795 ops/sec
-@lukeed/uuid               6,888,704 ops/sec
-nanoid                     6,166,399 ops/sec
-customAlphabet             3,290,342 ops/sec
-uuid v4                    1,662,373 ops/sec
-secure-random-string         415,340 ops/sec
-uid-safe.sync                400,875 ops/sec
-cuid                         212,669 ops/sec
-shortid                       53,453 ops/sec
+crypto.randomUUID         25,603,857 ops/sec
+@napi-rs/uuid              9,973,819 ops/sec
+uid/secure                 8,234,798 ops/sec
+@lukeed/uuid               7,464,706 ops/sec
+nanoid                     5,616,592 ops/sec
+customAlphabet             3,115,207 ops/sec
+uuid v4                    1,535,753 ops/sec
+secure-random-string         388,226 ops/sec
+uid-safe.sync                363,489 ops/sec
+cuid                         187,343 ops/sec
+shortid                       45,758 ops/sec
 
 Async:
-nanoid/async                 102,823 ops/sec
-async customAlphabet         101,574 ops/sec
-async secure-random-string    96,540 ops/sec
-uid-safe                      93,395 ops/sec
+nanoid/async                  96,094 ops/sec
+async customAlphabet          97,184 ops/sec
+async secure-random-string    92,794 ops/sec
+uid-safe                      90,684 ops/sec
 
 Non-secure:
-uid                       70,055,975 ops/sec
-nanoid/non-secure          2,985,368 ops/sec
-rndm                       2,800,961 ops/sec
+uid                       67,376,692 ops/sec
+nanoid/non-secure          2,849,639 ops/sec
+rndm                       2,674,806 ops/sec
 ```
 
 Среда сравнения: ThinkPad X1 Carbon Gen 9, Fedora 34, Node.js 16.10.
@@ -283,6 +284,15 @@ user.id = nanoid()
 Алфавит должен содержать ≤256 символов. Иначе мы не сможем гарантировать
 непредсказуемость ID.
 
+Длину ID можно менять не только в `customAlphabet()`, но и при вызове
+генератора, который она вернёт:
+
+```js
+import { customAlphabet } from 'nanoid'
+const nanoid = customAlphabet('1234567890abcdef', 10)
+model.id = nanoid(5) //=> "f01a2"
+```
+
 [на нашем калькуляторе]: https://alex7kom.github.io/nano-nanoid-cc/
 [`nanoid-dictionary`]: https://github.com/CyberAP/nanoid-dictionary
 
@@ -382,22 +392,17 @@ import { nanoid } from 'nanoid'
 
 ### Rollup
 
-Для Rollup понадобятся плагины [`@rollup/plugin-node-resolve`]
-и [`@rollup/plugin-replace`].
+Для Rollup понадобятся плагины [`@rollup/plugin-node-resolve`].
 
 ```js
 plugins: [
   nodeResolve({
     browser: true
-  }),
-  replace({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   })
 ]
 ```
 
 [`@rollup/plugin-node-resolve`]: https://github.com/rollup/plugins/tree/master/packages/node-resolve
-[`@rollup/plugin-replace`]: https://github.com/rollup/plugins/tree/master/packages/replace
 
 
 ### PouchDB и CouchDB
@@ -455,10 +460,20 @@ npx: installed 1 in 0.63s
 LZfXLFzPPR4NNrgjlWDxn
 ```
 
-Для смены алфавита или длины ID есть отдельный проект [`nanoid-cli`].
+Длину генерируемых ID можно передать в аргументе `--size` (или `-s`):
 
-[`nanoid-cli`]: https://github.com/twhitbeck/nanoid-cli
+```sh
+$ npx nanoid --size 10
+L3til0JS4z
+```
 
+Изменить алфавит можно при помощи аргумента `--alphabet` (ли `-a`)
+(в этом случае `--size` обязателен):
+
+```sh
+$ npx nanoid --alphabet abc --size 15
+bccbcabaabaccab
+```
 
 ### Другие языки программирования
 
@@ -474,7 +489,7 @@ Nano ID был портирован на множество языков. Это
 - [Deno](https://github.com/ianfabs/nanoid)
 - [Go](https://github.com/matoous/go-nanoid)
 - [Elixir](https://github.com/railsmechanic/nanoid)
-- [Haskell](https://github.com/4e6/nanoid-hs)
+- [Haskell](https://github.com/MichelBoucey/NanoID)
 - [Janet](https://sr.ht/~statianzo/janet-nanoid/)
 - [Java](https://github.com/aventrix/jnanoid)
 - [Nim](https://github.com/icyphox/nanoid.nim)

@@ -3,7 +3,7 @@
 <img src="https://ai.github.io/nanoid/logo.svg" align="right"
      alt="Nano ID logo by Anton Lovchikov" width="180" height="94">
 
-**English** | [Русский](./README.ru.md) | [简体中文](./README.zh-CN.md)
+**English** | [Русский](./README.ru.md) | [简体中文](./README.zh-CN.md) | [Bahasa Indonesia](./README.id-ID.md)
 
 A tiny, secure, URL-friendly, unique string ID generator for JavaScript.
 
@@ -81,27 +81,28 @@ There are three main differences between Nano ID and UUID v4:
 
 ```rust
 $ node ./test/benchmark.js
-crypto.randomUUID         28,387,114 ops/sec
-uid/secure                 8,633,795 ops/sec
-@lukeed/uuid               6,888,704 ops/sec
-nanoid                     6,166,399 ops/sec
-customAlphabet             3,290,342 ops/sec
-uuid v4                    1,662,373 ops/sec
-secure-random-string         415,340 ops/sec
-uid-safe.sync                400,875 ops/sec
-cuid                         212,669 ops/sec
-shortid                       53,453 ops/sec
+crypto.randomUUID         25,603,857 ops/sec
+@napi-rs/uuid              9,973,819 ops/sec
+uid/secure                 8,234,798 ops/sec
+@lukeed/uuid               7,464,706 ops/sec
+nanoid                     5,616,592 ops/sec
+customAlphabet             3,115,207 ops/sec
+uuid v4                    1,535,753 ops/sec
+secure-random-string         388,226 ops/sec
+uid-safe.sync                363,489 ops/sec
+cuid                         187,343 ops/sec
+shortid                       45,758 ops/sec
 
 Async:
-nanoid/async                 102,823 ops/sec
-async customAlphabet         101,574 ops/sec
-async secure-random-string    96,540 ops/sec
-uid-safe                      93,395 ops/sec
+nanoid/async                  96,094 ops/sec
+async customAlphabet          97,184 ops/sec
+async secure-random-string    92,794 ops/sec
+uid-safe                      90,684 ops/sec
 
 Non-secure:
-uid                       70,055,975 ops/sec
-nanoid/non-secure          2,985,368 ops/sec
-rndm                       2,800,961 ops/sec
+uid                       67,376,692 ops/sec
+nanoid/non-secure          2,849,639 ops/sec
+rndm                       2,674,806 ops/sec
 ```
 
 Test configuration: ThinkPad X1 Carbon Gen 9, Fedora 34, Node.js 16.10.
@@ -221,7 +222,9 @@ Read more about entropy collection in [`crypto.randomBytes`] docs.
 
 Unfortunately, you will lose Web Crypto API advantages in a browser
 if you use the asynchronous API. So, currently, in the browser, you are limited
-with either security or asynchronous behavior.
+with either security (`nanoid`), asynchronous behavior (`nanoid/async`),
+or non-secure behavior (`nanoid/non-secure`) that will be explained
+in the next part of the documentation.
 
 [`crypto.randomBytes`]: https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
 
@@ -249,15 +252,6 @@ const nanoid = customAlphabet('1234567890abcdef', 10)
 model.id = nanoid() //=> "4f90d13a42"
 ```
 
-Check the safety of your custom alphabet and ID size in our
-[ID collision probability] calculator. For more alphabets, check out the options
-in [`nanoid-dictionary`].
-
-Alphabet must contain 256 symbols or less.
-Otherwise, the security of the internal generator algorithm is not guaranteed.
-
-Customizable asynchronous and non-secure APIs are also available:
-
 ```js
 import { customAlphabet } from 'nanoid/async'
 const nanoid = customAlphabet('1234567890abcdef', 10)
@@ -270,6 +264,22 @@ async function createUser () {
 import { customAlphabet } from 'nanoid/non-secure'
 const nanoid = customAlphabet('1234567890abcdef', 10)
 user.id = nanoid()
+```
+
+Check the safety of your custom alphabet and ID size in our
+[ID collision probability] calculator. For more alphabets, check out the options
+in [`nanoid-dictionary`].
+
+Alphabet must contain 256 symbols or less.
+Otherwise, the security of the internal generator algorithm is not guaranteed.
+
+In addition to setting a default size, you can change the ID size when calling
+the function:
+
+```js
+import { customAlphabet } from 'nanoid'
+const nanoid = customAlphabet('1234567890abcdef', 10)
+model.id = nanoid(5) //=> "f01a2"
 ```
 
 [ID collision probability]: https://alex7kom.github.io/nano-nanoid-cc/
@@ -306,6 +316,10 @@ const nanoid = customRandom(urlAlphabet, 10, random)
 ```
 
 Asynchronous and non-secure APIs are not available for `customRandom`.
+
+Note, that between Nano ID versions we may change random generator
+call sequence. If you are using seed-based generators, we do not guarantee
+the same result.
 
 
 ## Usage
@@ -391,22 +405,17 @@ import { nanoid } from 'nanoid'
 ### Rollup
 
 For Rollup you will need [`@rollup/plugin-node-resolve`] to bundle browser version
-of this library and [`@rollup/plugin-replace`] to replace
-`process.env.NODE_ENV`:
+of this library.:
 
 ```js
   plugins: [
     nodeResolve({
       browser: true
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     })
   ]
 ```
 
 [`@rollup/plugin-node-resolve`]: https://github.com/rollup/plugins/tree/master/packages/node-resolve
-[`@rollup/plugin-replace`]: https://github.com/rollup/plugins/tree/master/packages/replace
 
 
 ### PouchDB and CouchDB
@@ -465,10 +474,20 @@ npx: installed 1 in 0.63s
 LZfXLFzPPR4NNrgjlWDxn
 ```
 
-If you want to change alphabet or ID size, you should use [`nanoid-cli`].
+Size of generated ID can be specified with `--size` (or `-s`) option:
 
-[`nanoid-cli`]: https://github.com/twhitbeck/nanoid-cli
+```sh
+$ npx nanoid --size 10
+L3til0JS4z
+```
 
+Custom alphabet can be specified with `--alphabet` (or `-a`) option
+(note that in this case `--size` is required):
+
+```sh
+$ npx nanoid --alphabet abc --size 15
+bccbcabaabaccab
+```
 
 ### Other Programming Languages
 
@@ -484,7 +503,7 @@ the same ID generator on the client and server side.
 * [Deno](https://github.com/ianfabs/nanoid)
 * [Go](https://github.com/matoous/go-nanoid)
 * [Elixir](https://github.com/railsmechanic/nanoid)
-* [Haskell](https://github.com/4e6/nanoid-hs)
+* [Haskell](https://github.com/MichelBoucey/NanoID)
 * [Janet](https://sr.ht/~statianzo/janet-nanoid/)
 * [Java](https://github.com/aventrix/jnanoid)
 * [Nim](https://github.com/icyphox/nanoid.nim)

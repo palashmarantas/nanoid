@@ -1,6 +1,22 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.1
+* Reduced package size.
+
+## 3.3
+* Added `size` argument to function from `customAlphabet` (by Stefan Sundin).
+
+## 3.2
+* Added `--size` and `--alphabet` arguments to binary (by Vitaly Baev).
+
+## 3.1.32
+* Reduced `async` exports size (by Artyom Arutyunyan).
+* Moved from Jest to uvu (by Vitaly Baev).
+
+## 3.1.31
+* Fixed collision vulnerability on object in `size` (by Artyom Arutyunyan).
+
 ## 3.1.30
 * Reduced size for project with `brotli` compression (by Anton Khlynovskiy).
 
