@@ -10,7 +10,7 @@ preMerge:
 preRun:
      command:
         - yarn install
-        - yarn add global pnpm
+        - npm install -g pnpm
         - pnpm install --frozen-lockfile --ignore-scripts
 postRun:
      command:
