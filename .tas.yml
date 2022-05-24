@@ -11,7 +11,7 @@ preRun:
      command:
         - yarn install
         - yarn global add pnpm
-        - which pnpm
+        - pnpm install
         - pnpm install --frozen-lockfile --ignore-scripts
 postRun:
      command:
