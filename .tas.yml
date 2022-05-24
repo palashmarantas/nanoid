@@ -9,10 +9,11 @@ preMerge:
     - "./bin/nanoid.test.js"
 preRun:
      command:
-        - npm install
-        - npm install -g pnpm
+        - yarn install
+        - yarn global add pnpm
+        - which pnpm
         - pnpm install --frozen-lockfile --ignore-scripts
 postRun:
      command:
-        - npm --version
+        - yarn --version
 version: 1.1
